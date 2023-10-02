@@ -4,7 +4,7 @@ import (
 	"flag"
 	"fmt"
 
-	"github.com/kkawakam/autify-backend-test/internal/fetch"
+	"github.com/kkawakam/autify-backend-test/internal/fetcher"
 )
 
 func main() {
@@ -13,5 +13,5 @@ func main() {
 	flag.Parse()
 	fmt.Println("Non-flag arguments:", flag.Args())
 	fmt.Println("Print Metadata argument:", printMetadata)
-	fetch.Run(flag.Args(), printMetadata)
+	fetcher.Run(flag.Args(), printMetadata)
 }
