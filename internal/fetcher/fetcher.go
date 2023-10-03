@@ -97,7 +97,6 @@ func recordMetadata(rawHtml string) (*metadata, error) {
 // 1. Fetch the HTML from a given url
 // 2. Persist the HTML to disk
 // 3. *Optionally* parse the HTML to extract metadata
-// 4. *Optionally* persist assets to disk
 func task(outputDirectory string, rawUrl string, isPrintMetadata bool, wg *sync.WaitGroup) {
 	defer wg.Done()
 
