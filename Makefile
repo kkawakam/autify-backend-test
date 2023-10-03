@@ -1,7 +1,7 @@
 BINARY_NAME=fetch
 
 build:
-	go build -o ${BINARY_NAME} main.go
+	CGO_ENABLED=0 go build -o ${BINARY_NAME} main.go
 
 run: build 
 	./${BINARY_NAME}
