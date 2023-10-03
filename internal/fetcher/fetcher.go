@@ -25,7 +25,7 @@ func getHtml(url string) (string, *time.Time, error) {
 	}
 	defer res.Body.Close()
 
-	mediatype, _, err := mime.ParseMediaType(res.Header.Get("Content-type"))
+	mediatype, _, err := mime.ParseMediaType(res.Header.Get("content-type"))
 	if err != nil {
 		return "", nil, err
 	}
