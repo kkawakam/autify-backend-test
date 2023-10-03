@@ -8,7 +8,9 @@ import (
 
 func main() {
 	var printMetadata bool
+	var outputDirectory string
 	flag.BoolVar(&printMetadata, "metadata", false, "record metadata for recorded sites")
+	flag.StringVar(&outputDirectory, "output_directory", "", "where results where be persisted NOTE: will not create the directory")
 	flag.Parse()
-	fetcher.Run(flag.Args(), printMetadata)
+	fetcher.Run(flag.Args(), printMetadata, outputDirectory)
 }

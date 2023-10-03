@@ -129,15 +129,15 @@ func task(outputDirectory string, rawUrl string, isPrintMetadata bool, wg *sync.
 // This the entrypoint and is responsible for
 // 1. Creating an output directory that will contain the html that was retrieved
 // 2. Spawn a separate goroutine for each url
-func Run(urls []string, isPrintMetadata bool) {
+func Run(urls []string, isPrintMetadata bool, outputDirectory string) {
 	currentTime := strconv.FormatInt(time.Now().UnixMilli(), 10)
-	outputDirectory := fmt.Sprintf("results-%s", currentTime)
+	resultDirectory := fmt.Sprintf("%s/results-%s", outputDirectory, currentTime)
 	if len(urls) > 0 {
 		var wg sync.WaitGroup
 		defer wg.Wait()
 
 		// Create a new directory that will contain the latest html files
-		err := os.Mkdir(outputDirectory, 0700)
+		err := os.MkdirAll(resultDirectory, 0700)
 		if err != nil {
 			fmt.Printf("Unable to create directory %s for saving html", currentTime)
 		}
@@ -145,7 +145,7 @@ func Run(urls []string, isPrintMetadata bool) {
 		// Create goroutines per URL
 		for _, url := range urls {
 			wg.Add(1)
-			go task(outputDirectory, url, isPrintMetadata, &wg)
+			go task(resultDirectory, url, isPrintMetadata, &wg)
 		}
 	}
 }
