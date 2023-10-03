@@ -116,6 +116,9 @@ func task(outputDirectory string, rawUrl string, isPrintMetadata bool, wg *sync.
 	}
 }
 
+// This the entrypoint and is responsible for
+// 1. Creating an output directory that will contain the html that was retrieved
+// 2. Spawn a separate goroutine for each url
 func Run(urls []string, isPrintMetadata bool) {
 	currentTime := strconv.FormatInt(time.Now().UnixMilli(), 10)
 	outputDirectory := fmt.Sprintf("results-%s", currentTime)
