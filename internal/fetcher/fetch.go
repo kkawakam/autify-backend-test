@@ -1,9 +1,11 @@
 package fetcher
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"log"
+	"mime"
 	"net/http"
 	"net/url"
 	"os"
@@ -22,6 +24,14 @@ func getHtml(url string) (string, *time.Time, error) {
 		return "", nil, err
 	}
 	defer res.Body.Close()
+
+	mediatype, _, err := mime.ParseMediaType(res.Header.Get("Content-type"))
+	if err != nil {
+		return "", nil, err
+	}
+	if mediatype != "text/html" {
+		return "", nil, errors.New(url + " does not contain text/html response content type")
+	}
 
 	bodyBytes, err := io.ReadAll(res.Body)
 	if err != nil {
