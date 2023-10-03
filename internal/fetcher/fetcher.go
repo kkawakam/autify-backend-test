@@ -40,8 +40,10 @@ func getHtml(url string) (string, *time.Time, error) {
 	return string(bodyBytes), &fetchTime, nil
 }
 
-func writeHtmlToDisk(outputDirectory string, host string, body string) error {
-	f, err := os.Create(outputDirectory + "/" + host + ".html")
+func writeHtmlToDisk(outputDirectory string, host string, path string, body string) error {
+	filename := host + path + ".html"
+	filename = strings.ReplaceAll(filename, "/", "-") // Remove all backslashes from the path
+	f, err := os.Create(outputDirectory + "/" + filename)
 	if err != nil {
 		return err
 	}
@@ -53,10 +55,15 @@ func writeHtmlToDisk(outputDirectory string, host string, body string) error {
 	return nil
 }
 
-func recordMetadata(rawHtml string, fetchTime *time.Time, host string) error {
+type metadata struct {
+	NumLinks int
+	Images   int
+}
+
+func recordMetadata(rawHtml string) (*metadata, error) {
 	root, err := html.Parse(strings.NewReader(rawHtml))
 	if err != nil {
-		return err
+		return nil, err
 	}
 	bfs := []*html.Node{root}
 	linkCount := 0
@@ -80,11 +87,10 @@ func recordMetadata(rawHtml string, fetchTime *time.Time, host string) error {
 		}
 	}
 
-	println("site: ", host)
-	println("num_links: ", linkCount)
-	println("images: ", imgCount)
-	println("last_fetch: ", fetchTime.Format("Mon Jan 02 2006 15:04 MST"))
-	return nil
+	return &metadata{
+		NumLinks: linkCount,
+		Images:   imgCount,
+	}, nil
 }
 
 // Runs a 'task' which will be the following:
@@ -110,7 +116,7 @@ func task(outputDirectory string, rawUrl string, isPrintMetadata bool, wg *sync.
 	}
 
 	// 2. Persist HTML to disk
-	err = writeHtmlToDisk(outputDirectory, u.Host, body)
+	err = writeHtmlToDisk(outputDirectory, u.Host, u.Path, body)
 	if err != nil {
 		log.Println(err)
 		return
@@ -118,11 +124,15 @@ func task(outputDirectory string, rawUrl string, isPrintMetadata bool, wg *sync.
 
 	// 3. Parse HTML and generate metadata
 	if isPrintMetadata {
-		err = recordMetadata(body, fetchTime, u.Host)
+		parsedMetadata, err := recordMetadata(body)
 		if err != nil {
 			log.Println("Unable to parse html retrieved from " + rawUrl)
 			return
 		}
+		println("site: ", u.Host+u.Path)
+		println("num_links: ", parsedMetadata.NumLinks)
+		println("images: ", parsedMetadata.Images)
+		println("last_fetch: ", fetchTime.Format("Mon Jan 02 2006 15:04 MST"))
 	}
 }
 

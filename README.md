@@ -12,7 +12,7 @@ docker run -v fetcher-output:/output katsutoshi-kawakami-autify-backend-test --m
 You can look at the output html by going to the appropriate volume directory.
 Each run of the container will generate a new directory suffixed by a unix timestamp
 ```bash
-# Will need to be root
+# You will most likely need to be root
 $ cd /var/lib/docker/volumes/fetcher-output/_data
 $ tree
 .
